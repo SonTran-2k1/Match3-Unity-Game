@@ -1,9 +1,7 @@
 ﻿using DG.Tweening;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-
 public class GameManager : MonoBehaviour
 {
     public event Action<eStateGame> StateChangedAction = delegate { };
@@ -40,10 +38,13 @@ public class GameManager : MonoBehaviour
 
 
     private BoardController m_boardController;
+    [SerializeField]private BoardController prefabs_boardController;
 
-    private UIMainManager m_uiMenu;
+    [SerializeField]private UIMainManager m_uiMenu;
 
     private LevelCondition m_levelCondition;
+    [SerializeField]private LevelTime m_levelConditionTimeMode;
+    [SerializeField]private LevelMoves m_levelConditionMoveMode;
 
     private void Awake()
     {
@@ -51,7 +52,7 @@ public class GameManager : MonoBehaviour
 
         m_gameSettings = Resources.Load<GameSettings>(Constants.GAME_SETTINGS_PATH);
 
-        m_uiMenu = FindObjectOfType<UIMainManager>();
+        //m_uiMenu = FindObjectOfType<UIMainManager>();
         m_uiMenu.Setup(this);
     }
 
@@ -84,19 +85,20 @@ public class GameManager : MonoBehaviour
     public void LoadLevel(eLevelMode mode)
     {
         m_boardController = new GameObject("BoardController").AddComponent<BoardController>();
+        //m_boardController
         m_boardController.StartGame(this, m_gameSettings);
-
         if (mode == eLevelMode.MOVES)
         {
-            m_levelCondition = this.gameObject.AddComponent<LevelMoves>();
+            m_levelCondition = m_levelConditionMoveMode;
             m_levelCondition.Setup(m_gameSettings.LevelMoves, m_uiMenu.GetLevelConditionView(), m_boardController);
         }
         else if (mode == eLevelMode.TIMER)
         {
-            m_levelCondition = this.gameObject.AddComponent<LevelTime>();
-            m_levelCondition.Setup(m_gameSettings.LevelMoves, m_uiMenu.GetLevelConditionView(), this);
+            m_levelCondition = m_levelConditionTimeMode;
+            m_levelCondition.Setup(m_gameSettings.LevelTime, m_uiMenu.GetLevelConditionView(), this);
         }
 
+        m_levelCondition.enabled = true;
         m_levelCondition.ConditionCompleteEvent += GameOver;
 
         State = eStateGame.GAME_STARTED;
@@ -132,7 +134,8 @@ public class GameManager : MonoBehaviour
         {
             m_levelCondition.ConditionCompleteEvent -= GameOver;
 
-            Destroy(m_levelCondition);
+            //Destroy(m_levelCondition);
+            m_levelCondition.enabled = false;
             m_levelCondition = null;
         }
     }

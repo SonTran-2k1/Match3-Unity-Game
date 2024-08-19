@@ -10,6 +10,11 @@ public class LevelMoves : LevelCondition
 
     private BoardController m_board;
 
+    private void Start()
+    {
+
+    }
+
     public override void Setup(float value, Text txt, BoardController board)
     {
         base.Setup(value, txt);

@@ -40,4 +40,9 @@ public class LevelCondition : MonoBehaviour
     {
 
     }
+
+    private void OnDisable()
+    {
+        m_conditionCompleted = false;
+    }
 }
